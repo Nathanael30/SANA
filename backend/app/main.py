@@ -13,7 +13,7 @@ app = FastAPI(title="SANA API", description="Symbiotic AI for Neonatal & Materna
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # For hackathon, allow all
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -51,19 +51,9 @@ def generate_referral_endpoint(request: schemas.AssessmentRequest):
 
 @app.post("/image-assess", response_model=schemas.ImageAssessmentResponse)
 def assess_image(request: schemas.ImageAssessmentRequest):
-    flags = []
-    obs = request.observed_signs.lower()
-    if request.image_type == "eyes":
-        if "pale" in obs or "pallor" in obs or "white" in obs:
-            flags.append("Possible Anemia")
-    elif request.image_type == "ankles":
-        if "swelling" in obs or "edema" in obs:
-            flags.append("Possible Edema")
-    elif request.image_type == "newborn skin":
-        if "yellow" in obs:
-            flags.append("Possible Jaundice")
-            
-    if not flags:
-        flags.append("No specific visual flags identified from text.")
-        
+    flags = llm_service.process_vision_assessment(
+        image_type=request.image_type,
+        observed_signs=request.observed_signs,
+        base64_image=request.base64_image
+    )
     return {"possible_flags": flags}

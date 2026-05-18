@@ -80,3 +80,47 @@ def process_assessment(data: dict):
         "referral_needed": llm_output.get("referral_needed", False),
         "referral_letter": referral_letter
     }
+
+def process_vision_assessment(image_type: str, observed_signs: str, base64_image: str = None):
+    """
+    Calls Ollama vision model if a base64 image is provided.
+    """
+    flags = []
+    
+    if base64_image:
+        try:
+            # We strip the data URI scheme if present (e.g. data:image/jpeg;base64,...)
+            if "," in base64_image:
+                base64_image = base64_image.split(",")[1]
+                
+            prompt = f"You are a clinical AI assistant for a CHW. Look at this image of the patient's {image_type}. Additional CHW observation: {observed_signs}. Identify any visible warning signs like pallor, edema, or jaundice. Respond ONLY with a JSON list of strings, for example: [\"Possible Anemia\", \"Possible Edema\"]. If none, return []."
+            
+            response = ollama.chat(model=MODEL_NAME, messages=[
+                {
+                    'role': 'user',
+                    'content': prompt,
+                    'images': [base64_image]
+                }
+            ])
+            
+            result_text = response['message']['content'].strip()
+            if result_text.startswith("```json"):
+                result_text = result_text[7:-3].strip()
+            flags = json.loads(result_text)
+            return flags
+        except Exception as e:
+            print(f"Vision model failed: {e}")
+            
+    # Fallback to simple rule-based if vision fails or no image provided
+    obs = observed_signs.lower()
+    if image_type == "eyes" and ("pale" in obs or "pallor" in obs or "white" in obs):
+        flags.append("Possible Anemia")
+    elif image_type == "ankles" and ("swelling" in obs or "edema" in obs):
+        flags.append("Possible Edema")
+    elif image_type == "newborn skin" and "yellow" in obs:
+        flags.append("Possible Jaundice")
+        
+    if not flags:
+        flags.append("No specific visual flags identified.")
+        
+    return flags

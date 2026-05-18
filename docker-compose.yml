@@ -9,7 +9,7 @@ services:
     environment:
       - DATABASE_URL=sqlite:///./sana.db
       - OLLAMA_URL=http://host.docker.internal:11434
-      - MODEL_NAME=gemma:2b
+      - MODEL_NAME=gemma4
     volumes:
       - ./backend/sana.db:/app/sana.db
     extra_hosts:

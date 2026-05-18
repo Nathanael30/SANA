@@ -1,0 +1,13 @@
+{
+  "appId": "com.sana.app",
+  "appName": "SANA",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

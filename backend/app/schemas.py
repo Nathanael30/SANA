@@ -50,6 +50,7 @@ class VisitResponse(VisitCreate):
 class ImageAssessmentRequest(BaseModel):
     image_type: str # eyes, ankles, abdomen, newborn skin, other
     observed_signs: str
+    base64_image: Optional[str] = None
 
 class ImageAssessmentResponse(BaseModel):
     possible_flags: List[str]
