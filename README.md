@@ -102,23 +102,3 @@ DATABASE_URL=sqlite:///./sana.db
 
 ## Clinical Safety Disclaimer
 **SANA is a hackathon prototype for educational and demonstration purposes only. It is not a certified medical device and does not provide diagnosis or treatment. Always consult qualified healthcare professionals and follow local emergency protocols.**
-
-## Future Roadmap
-- Integration with Gemma multimodal vision models.
-- Fine-tuning on WHO maternal health protocols.
-- Whisper.cpp local speech-to-text integration.
-- Local text-to-speech support.
-- Encrypted patient storage.
-- Synchronization to district health systems.
-- Android APK wrapper.
-
-## GitHub Push Instructions
-To push this project to GitHub, run:
-```bash
-git init
-git add .
-git commit -m "Initial commit: SANA offline maternal health AI prototype"
-git branch -M main
-git remote add origin <MY_GITHUB_REPO_URL>
-git push -u origin main
-```
